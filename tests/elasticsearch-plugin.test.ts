@@ -47,6 +47,9 @@ describe('Elasticsearch Plugin', async () => {
     expect(await CatCollection.esExists()).to.be.false
   })
 
+  /**
+   * @unstable
+   */
   it('should delete then recreate index', async () => {
     await SnakeCollection.esDeleteIndex()
     expect(await SnakeCollection.esExists()).to.be.false

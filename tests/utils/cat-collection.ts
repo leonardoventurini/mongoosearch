@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
-import { ElasticsearchPlugin } from '../../src/elasticsearch-plugin'
+import { ElasticsearchPlugin } from '../../src'
 import { ElasticsearchClient } from './elasticsearch-client'
 import { ElasticsearchModel } from '../../src/elasticsearch-model'
 import { CollectionNames } from './collection-names'

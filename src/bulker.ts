@@ -1,11 +1,7 @@
 import EventEmitter from 'events'
 import { Client } from '@elastic/elasticsearch'
-import { BulkOptions } from './elasticsearch-plugin'
+import { BulkOptions } from './bulk-options'
 
-/**
- * @event `error`: Emitted when bulk return an error.
- * @event `sent`: Emitted when bulk has sent a buffer.
- */
 export default class Bulker extends EventEmitter {
   client: Client
   timeout: NodeJS.Timeout
@@ -46,27 +42,24 @@ export default class Bulker extends EventEmitter {
     if (len) {
       this.flushing = true
 
-      this.client.bulk(
-        { body: this.buffer },
-        err => {
-          this.flushing = false
+      this.client.bulk({ body: this.buffer }, err => {
+        this.flushing = false
 
-          if (err) {
-            this.emit('error', err)
-          } else {
-            this.emit('sent', len)
-          }
-        },
-      )
+        if (err) {
+          this.emit('error', err)
+        } else {
+          this.emit('sent', len)
+        }
+      })
       this.buffer = []
     }
   }
 
-  push() {
+  push(...args) {
     let sending = false
 
-    if (arguments.length) {
-      this.buffer.push.apply(this.buffer, arguments)
+    if (args.length) {
+      this.buffer.push(...args)
 
       sending = this.buffer.length >= this.size
 
