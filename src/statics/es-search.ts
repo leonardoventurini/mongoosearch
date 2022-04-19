@@ -35,7 +35,7 @@ export async function esSearch(query: any = {}, options: ESSearchOptions = {}) {
     params._source = false
   }
 
-  let { data: result } = await esOptions.client.search(params)
+  let { body: result } = await esOptions.client.search(params)
 
   if (!hydrate && !idsOnly) {
     return result

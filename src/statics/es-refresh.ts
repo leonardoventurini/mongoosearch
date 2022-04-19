@@ -1,4 +1,4 @@
-import { ElasticsearchMethods } from '../elasticsearch-plugin'
+import { ElasticsearchMethods } from '../elasticsearch-methods'
 
 export async function esRefresh(this: ElasticsearchMethods) {
   const options = this.esOptions()

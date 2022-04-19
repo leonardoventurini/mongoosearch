@@ -1,5 +1,5 @@
 import { isEmpty, isString } from 'lodash'
-import { ElasticsearchMethods } from '../elasticsearch-plugin'
+import { ElasticsearchMethods } from '../elasticsearch-methods'
 
 export async function esCount(
   this: ElasticsearchMethods,
@@ -26,5 +26,5 @@ export async function esCount(
 
   const result = await esOptions.client.count(params)
 
-  return countOnly ? result?.data?.count : result
+  return countOnly ? result?.body?.count : result
 }

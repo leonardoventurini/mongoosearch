@@ -1,16 +1,21 @@
-import { BaseIngredients } from '../base-data/base-ingredients'
-import { Collections } from '../collections'
 import { expect } from 'chai'
-import { ElasticsearchClient } from '../elasticsearch-client'
 import { Client } from '@elastic/elasticsearch'
 import { ESType } from '../src/mapping'
-import { omit } from 'lodash'
-import { TestDatabase } from "../test-database";
+import { lowerCase, omit } from 'lodash'
+import { TestDatabase } from './utils/test-database'
+import { ElasticsearchClient } from './utils/elasticsearch-client'
+import { SnakeCollection } from './utils/snake-collection'
+import faker from 'faker'
+import { getIndexName } from './utils/get-index-name'
+import { CollectionNames } from './utils/collection-names'
+import { CatCollection } from './utils/cat-collection'
+
+const firstSnake = faker.animal.snake()
 
 async function clearIndexes() {
   const getIndexes = await ElasticsearchClient.indices.get({ index: 'test_*' })
 
-  for (const index of Object.keys(getIndexes.data)) {
+  for (const index of Object.keys(getIndexes.body)) {
     console.log(`Deleting index ${index}`)
 
     await ElasticsearchClient.indices.delete({
@@ -20,73 +25,56 @@ async function clearIndexes() {
 }
 
 describe('Elasticsearch Plugin', async () => {
-  let organization
-
-  before(async () => {
+  beforeEach(async () => {
     await clearIndexes()
+    await SnakeCollection.deleteMany({})
 
-    await Collections.Ingredients.deleteMany({})
-
-    organization = await Collections.Organizations.create({
-      name: 'Test Organization',
-      legalName: 'TEST ORGANIZATION LDTA',
-      cnpj: '15.586.422/0001-68',
-      slug: 'test-organization',
+    await SnakeCollection.create({
+      sample: firstSnake,
     })
 
-    await Collections.Ingredients.esCreateMapping()
-
-    for (const ingredient of BaseIngredients) {
-      await Collections.Ingredients.create({
-        ...ingredient,
-        organization,
-      })
-    }
-
-    await Collections.Ingredients.esSynchronize()
+    await SnakeCollection.esCreateMapping()
+    await SnakeCollection.esSynchronize()
   })
 
-  after(async () => {
-    await Collections.Ingredients.deleteMany({})
-
+  afterEach(async () => {
+    await SnakeCollection.deleteMany({})
     await clearIndexes()
   })
 
   it('should check if the index exists', async () => {
-    expect(await Collections.Ingredients.esExists()).to.be.true
-    expect(await Collections.Recipes.esExists()).to.be.false
+    expect(await SnakeCollection.esExists()).to.be.true
+    expect(await CatCollection.esExists()).to.be.false
   })
 
   it('should delete then recreate index', async () => {
-    await Collections.Recipes.esCreateMapping()
+    await SnakeCollection.esDeleteIndex()
+    expect(await SnakeCollection.esExists()).to.be.false
 
-    await Collections.Recipes.esDeleteIndex()
-    expect(await Collections.Recipes.esExists()).to.be.false
-
-    await Collections.Recipes.esCreateMapping()
-    expect(await Collections.Recipes.esExists()).to.be.true
+    await SnakeCollection.esCreateMapping()
+    expect(await SnakeCollection.esExists()).to.be.true
   })
 
   it('should store documents into index', async () => {
     const indices = await ElasticsearchClient.cat.indices({ format: 'json' })
 
     expect(indices).to.containSubset({
-      data: [
+      body: [
         {
-          index: 'test_ingredients',
+          index: getIndexName(CollectionNames.Snake),
         },
       ],
     })
 
-    const result = await Collections.Ingredients.esSearch({
-      query_string: { query: 'farinha' },
+    const result = await SnakeCollection.esSearch({
+      query_string: { query: lowerCase(firstSnake) },
     })
 
     expect(result).to.containSubset({
       hits: {
         hits: [
           {
-            _index: 'test_ingredients',
+            _index: getIndexName(CollectionNames.Snake),
           },
         ],
       },
@@ -94,25 +82,25 @@ describe('Elasticsearch Plugin', async () => {
   })
 
   it('should return the count with no params', async () => {
-    const res = await Collections.Ingredients.esCount()
+    const res = await SnakeCollection.esCount()
 
     expect(res).to.containSubset({
-      data: {
-        count: 23,
+      body: {
+        count: 1,
       },
     })
   })
 
   it('should return the count only', async () => {
-    const count = await Collections.Ingredients.esCount(null, {
+    const count = await SnakeCollection.esCount(null, {
       countOnly: true,
     })
 
-    expect(count).to.equal(23)
+    expect(count).to.equal(1)
   })
 
   it('should return the count for a query string', async () => {
-    const res = await Collections.Ingredients.esCount('farinha', {
+    const res = await SnakeCollection.esCount(lowerCase(firstSnake), {
       countOnly: true,
     })
 
@@ -120,32 +108,31 @@ describe('Elasticsearch Plugin', async () => {
   })
 
   it('should get elasticsearch plugin options for collection', async () => {
-    const options = Collections.Ingredients.esOptions()
+    const options = SnakeCollection.esOptions()
 
     expect(options.client).to.be.instanceOf(Client)
 
     expect(omit(options, 'client')).to.containSubset({
       esManualIndexing: true,
-      index: 'test_ingredients',
+      index: getIndexName(CollectionNames.Snake),
       mapping: {
         properties: {
-          number: { type: ESType.Long },
-          organization: { type: ESType.Keyword },
-          name: { type: ESType.Text },
-          identifier: { type: ESType.Text },
-          description: { type: ESType.Text },
-          nameLength: { type: ESType.Integer }, // Extend Option
+          sample: { type: ESType.Text },
         },
       },
     })
   })
 
   it('should ignore diacritics by using the folding analyzer', async () => {
-    const data = await Collections.Ingredients.esSearch({
-      query_string: { query: 'cafe' },
+    await SnakeCollection.create({ sample: 'With Ãccént' })
+
+    await SnakeCollection.esSynchronize()
+
+    const data = await SnakeCollection.esSearch({
+      query_string: { query: 'with accent' },
     })
 
-    expect(data.hits.hits).to.have.length(2)
+    expect(data.hits.hits).to.have.length(1)
   })
 
   describe('Synchronization', () => {
@@ -154,21 +141,19 @@ describe('Elasticsearch Plugin', async () => {
     })
 
     it('should synchronize', async () => {
-      await BaseData.generate()
+      const { body } = await SnakeCollection.esSynchronize()
 
-      const { data } = await Collections.Ingredients.esSynchronize()
-
-      expect(data?._shards?.successful).to.be.greaterThan(0)
+      expect(body?._shards?.successful).to.be.greaterThan(0)
     })
 
     it('should search', async () => {
       await clearIndexes()
 
-      await BaseData.generate()
+      await SnakeCollection.create({ sample: 'Sample 2' })
 
-      await Collections.Ingredients.esSynchronize({ name: /salsicha/i })
+      await SnakeCollection.esSynchronize({ sample: /sample/i })
 
-      const result = await Collections.Ingredients.esSearch({
+      const result = await SnakeCollection.esSearch({
         query: {
           match_all: {},
         },
@@ -180,7 +165,7 @@ describe('Elasticsearch Plugin', async () => {
 
       expect(
         hits
-          .map(({ _source }) => /salsicha/i.test(_source.name))
+          .map(({ _source }) => /sample/i.test(_source.sample))
           .every(Boolean),
       ).to.be.true
     })
