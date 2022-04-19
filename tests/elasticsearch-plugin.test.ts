@@ -15,7 +15,7 @@ const firstSnake = faker.animal.snake()
 async function clearIndexes() {
   const getIndexes = await ElasticsearchClient.indices.get({ index: 'test_*' })
 
-  for (const index of Object.keys(getIndexes.body)) {
+  for (const index of Object.keys(getIndexes)) {
     console.log(`Deleting index ${index}`)
 
     await ElasticsearchClient.indices.delete({
@@ -34,7 +34,7 @@ describe('Elasticsearch Plugin', async () => {
     })
 
     await SnakeCollection.esCreateMapping()
-    await SnakeCollection.esSynchronize()
+    await SnakeCollection.esSync()
   })
 
   afterEach(async () => {
@@ -61,13 +61,11 @@ describe('Elasticsearch Plugin', async () => {
   it('should store documents into index', async () => {
     const indices = await ElasticsearchClient.cat.indices({ format: 'json' })
 
-    expect(indices).to.containSubset({
-      body: [
-        {
-          index: getIndexName(CollectionNames.Snake),
-        },
-      ],
-    })
+    expect(indices).to.containSubset([
+      {
+        index: getIndexName(CollectionNames.Snake),
+      },
+    ])
 
     const result = await SnakeCollection.esSearch({
       query_string: { query: lowerCase(firstSnake) },
@@ -88,9 +86,7 @@ describe('Elasticsearch Plugin', async () => {
     const res = await SnakeCollection.esCount()
 
     expect(res).to.containSubset({
-      body: {
-        count: 1,
-      },
+      count: 1,
     })
   })
 
@@ -129,7 +125,7 @@ describe('Elasticsearch Plugin', async () => {
   it('should ignore diacritics by using the folding analyzer', async () => {
     await SnakeCollection.create({ sample: 'With Ãccént' })
 
-    await SnakeCollection.esSynchronize()
+    await SnakeCollection.esSync()
 
     const data = await SnakeCollection.esSearch({
       query_string: { query: 'with accent' },
@@ -144,9 +140,10 @@ describe('Elasticsearch Plugin', async () => {
     })
 
     it('should synchronize', async () => {
-      const { body } = await SnakeCollection.esSynchronize()
+      const result = await SnakeCollection.esSync()
 
-      expect(body?._shards?.successful).to.be.greaterThan(0)
+      // @ts-ignore
+      expect(result?._shards?.successful).to.be.greaterThan(0)
     })
 
     it('should search', async () => {
@@ -154,7 +151,7 @@ describe('Elasticsearch Plugin', async () => {
 
       await SnakeCollection.create({ sample: 'Sample 2' })
 
-      await SnakeCollection.esSynchronize({ sample: /sample/i })
+      await SnakeCollection.esSync({ sample: /sample/i })
 
       const result = await SnakeCollection.esSearch({
         query: {

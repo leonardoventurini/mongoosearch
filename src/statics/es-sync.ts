@@ -4,7 +4,7 @@ import * as utils from '../utils'
 import { esLog } from '../utils'
 import chalk from 'chalk'
 
-export function esSynchronize(conditions, projection, options) {
+export function esSync(conditions, projection, options) {
   const model = this
 
   return new Promise((resolve, reject) => {
@@ -35,19 +35,18 @@ export function esSynchronize(conditions, projection, options) {
       bulker.removeListener('error', onError)
       bulker.removeListener('sent', onSent)
 
-      esOptions.client.indices.refresh(
-        { index: esOptions.index },
-        (err, result) => {
+      esOptions.client.indices
+        .refresh({ index: esOptions.index })
+        .then(resolve)
+        .catch(reject)
+        .finally(() => {
           esLog(
             `finished synchronizing ${chalk.cyan(esOptions.index)} ${chalk.gray(
               Date.now() - start,
               'ms',
             )}`,
           )
-
-          err ? reject(err) : resolve(result)
-        },
-      )
+        })
     }
 
     function onError(err) {

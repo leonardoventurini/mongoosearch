@@ -25,7 +25,7 @@ export async function esCreateMapping(opts?: CreateMappingOptions) {
 
   esLog(`creating map for ${chalk.cyan(index)}`)
 
-  return client.indices.create({
+  return await client.indices.create({
     index,
     body: merge(
       {

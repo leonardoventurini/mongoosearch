@@ -26,5 +26,5 @@ export async function esCount(
 
   const result = await esOptions.client.count(params)
 
-  return countOnly ? result?.body?.count : result
+  return countOnly ? result?.count : result
 }

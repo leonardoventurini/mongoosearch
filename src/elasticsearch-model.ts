@@ -5,16 +5,19 @@ import {
   QueryOptions,
   QueryWithHelpers,
 } from 'mongoose'
-import { CreateMappingOptions } from './statics/es-create-mapping'
 import {
-  ApiResponse,
-  Context,
-  RequestBody,
-  TransportRequestPromise,
-} from '@elastic/elasticsearch/lib/Transport'
-import * as T from '@elastic/elasticsearch/api/types'
-import { ESSearchOptions } from './statics/es-search'
+  CreateMappingOptions,
+  esCreateMapping,
+} from './statics/es-create-mapping'
+
+import { esSearch, ESSearchOptions } from './statics/es-search'
 import { PluginOptions } from './plugin-options'
+import { Context } from 'mocha'
+import { esRefresh } from './statics/es-refresh'
+import { RequestBody } from '@elastic/elasticsearch'
+import { esSync } from './statics/es-sync'
+import { esCount } from './statics/es-count'
+import { esDeleteIndex } from './statics/es-delete-index'
 
 export interface ElasticsearchModel<
   TSchema = any,
@@ -29,12 +32,11 @@ export interface ElasticsearchModel<
    */
   esCreateMapping(
     opts?: CreateMappingOptions,
-  ): TransportRequestPromise<ApiResponse<T.IndicesPutMappingResponse>>
+  ): ReturnType<typeof esCreateMapping>
 
-  esRefresh<
-    TResponse = Record<string, any>,
-    TContext = Context,
-  >(): TransportRequestPromise<ApiResponse<TResponse, TContext>>
+  esRefresh<TResponse = Record<string, any>, TContext = Context>(): ReturnType<
+    typeof esRefresh
+  >
 
   /**
    * https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/introduction.html
@@ -46,9 +48,9 @@ export interface ElasticsearchModel<
   >(
     params?: TRequestBody,
     options?: ESSearchOptions,
-  ): TransportRequestPromise<ApiResponse<TResponse, TContext> | any>
+  ): ReturnType<typeof esSearch>
 
-  esSynchronize<TResponse = Record<string, any>, TContext = Context>(
+  esSync<TResponse = Record<string, any>, TContext = Context>(
     filter?:
       | FilterQuery<TSchema>
       | QueryWithHelpers<
@@ -59,7 +61,7 @@ export interface ElasticsearchModel<
         >,
     projection?: any | null,
     options?: QueryOptions | null,
-  ): TransportRequestPromise<ApiResponse<TResponse, TContext>>
+  ): ReturnType<typeof esSync>
 
   esCount<
     TResponse = Record<string, any>,
@@ -68,12 +70,12 @@ export interface ElasticsearchModel<
   >(
     query?: TRequestBody | string,
     options?: { countOnly?: boolean },
-  ): TransportRequestPromise<ApiResponse<TResponse, TContext> | number>
+  ): ReturnType<typeof esCount>
 
   esExists(): Promise<boolean>
 
   esDeleteIndex<
     TResponse = Record<string, any>,
     TContext = Context,
-  >(): TransportRequestPromise<ApiResponse<TResponse, TContext>>
+  >(): ReturnType<typeof esDeleteIndex>
 }

@@ -4,7 +4,7 @@ import { esCreateMapping } from './statics/es-create-mapping'
 import { esExists } from './statics/es-exists'
 import { esDeleteIndex } from './statics/es-delete-index'
 import { esCount } from './statics/es-count'
-import { esSynchronize } from './statics/es-synchronize'
+import { esSync } from './statics/es-sync'
 import { esSearch } from './statics/es-search'
 import { esRefresh } from './statics/es-refresh'
 import { esUnset } from './es-unset'
@@ -24,7 +24,7 @@ export function ElasticsearchPlugin(schema, options) {
   schema.statics.esCreateMapping = esCreateMapping
   schema.statics.esRefresh = esRefresh
   schema.statics.esSearch = esSearch
-  schema.statics.esSynchronize = esSynchronize
+  schema.statics.esSync = esSync
   schema.statics.esCount = esCount
   schema.statics.esExists = esExists
   schema.statics.esDeleteIndex = esDeleteIndex

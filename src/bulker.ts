@@ -42,15 +42,18 @@ export default class Bulker extends EventEmitter {
     if (len) {
       this.flushing = true
 
-      this.client.bulk({ body: this.buffer }, err => {
-        this.flushing = false
-
-        if (err) {
-          this.emit('error', err)
-        } else {
+      this.client
+        .bulk({ operations: this.buffer })
+        .then(() => {
           this.emit('sent', len)
-        }
-      })
+        })
+        .catch(err => {
+          this.emit('error', err)
+        })
+        .finally(() => {
+          this.flushing = false
+        })
+
       this.buffer = []
     }
   }
