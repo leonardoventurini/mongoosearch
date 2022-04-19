@@ -1,10 +1,11 @@
 import * as utils from './utils'
 import { cloneDeep, isFunction, isString } from 'lodash'
 import client from './client'
-import Bulker from './bulker'
+import BulkSender from './bulk-sender'
 import { generate as generateMapping } from './mapping'
-import { ElasticsearchMethods, PluginOptions } from './elasticsearch-plugin'
 import { Document } from 'mongoose'
+import { PluginOptions } from './plugin-options'
+import { ElasticsearchMethods } from './elasticsearch-methods'
 
 export function getIndexName(collectionName: string) {
   const lowercase = collectionName.toLowerCase()
@@ -24,7 +25,7 @@ export const esOptions = options => {
   let options$ = null
 
   return function esOptions(): PluginOptions & {
-    bulker: Bulker
+    bulker: BulkSender
     mapping: Record<string, any>
   } {
     if (options$) return options$
@@ -44,7 +45,7 @@ export const esOptions = options => {
     }
 
     if (options.bulk) {
-      options$.bulker = new Bulker(options.client, options.bulk)
+      options$.bulker = new BulkSender(options.client, options.bulk)
     }
 
     options$.mapping = Object.freeze({
@@ -94,5 +95,9 @@ export async function esIndex(
     body: update ? { doc: body } : body,
   }
 
-  return esOptions.client[update ? 'update' : 'index'](payload as any)
+  if (update) {
+    return esOptions.client.update(payload)
+  }
+
+  return esOptions.client.index(payload)
 }

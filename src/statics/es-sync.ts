@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import Bulker from '../bulker'
+import BulkSender from '../bulk-sender'
 import * as utils from '../utils'
 import { esLog } from '../utils'
 import chalk from 'chalk'
@@ -27,7 +27,7 @@ export function esSync(conditions, projection, options) {
 
     const stream = query.cursor()
 
-    const bulker = esOptions.bulker || new Bulker(esOptions.client)
+    const bulker = esOptions.bulker || new BulkSender(esOptions.client)
 
     let streamClosed = false
 

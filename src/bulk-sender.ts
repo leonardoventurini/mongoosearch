@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { Client } from '@elastic/elasticsearch'
 import { BulkOptions } from './bulk-options'
 
-export default class Bulker extends EventEmitter {
+export default class BulkSender extends EventEmitter {
   client: Client
   timeout: NodeJS.Timeout
   flushing = false

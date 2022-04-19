@@ -1,24 +1,14 @@
-import {
-  ApiResponse,
-  Context,
-  TransportRequestPromise,
-} from '@elastic/elasticsearch/lib/Transport'
-import { Updater } from './methods'
+import { esIndex, Updater } from './methods'
 import { PluginOptions } from './plugin-options'
+import { esUnset } from './es-unset'
+import { esRemove } from './statics/es-remove'
 
 export interface ElasticsearchMethods {
-  esOptions?(): PluginOptions
+  esOptions(): PluginOptions
 
-  esIndex?<TResponse = Record<string, any>, TContext = Context>(
-    updater?: Updater,
-  ): TransportRequestPromise<ApiResponse<TResponse, TContext>>
+  esIndex(updater?: Updater): ReturnType<typeof esIndex>
 
-  esUnset<TResponse = Record<string, any>, TContext = Context>(
-    fields?: string[],
-  ): TransportRequestPromise<ApiResponse<TResponse, TContext>>
+  esUnset(fields?: string[]): ReturnType<typeof esUnset>
 
-  esRemove<
-    TResponse = Record<string, any>,
-    TContext = Context,
-  >(): TransportRequestPromise<ApiResponse<TResponse, TContext>>
+  esRemove(): ReturnType<typeof esRemove>
 }

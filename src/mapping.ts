@@ -378,7 +378,7 @@ export function generate(schema: any) {
 }
 
 function isEmbedded(type) {
-  return type === 'embedded' || type === 'array' // || type === 'mixed';
+  return type === 'embedded' || type === 'array'
 }
 
 function getTypeKey(schema) {

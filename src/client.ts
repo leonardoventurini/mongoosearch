@@ -1,4 +1,4 @@
-import elasticsearch from '@elastic/elasticsearch'
+import { Client } from '@elastic/elasticsearch'
 
 export default function (options) {
   const opts = {} as any
@@ -17,5 +17,5 @@ export default function (options) {
 
   opts.log = options.log || null
 
-  return new elasticsearch.Client(opts)
+  return new Client(opts)
 }
