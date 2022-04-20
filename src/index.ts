@@ -1,1 +1,1 @@
-export * from './elasticsearch-plugin'
+export * from './mongoosearch'

@@ -1,11 +1,10 @@
 import * as utils from './utils'
 import { cloneDeep, isFunction, isString } from 'lodash'
-import client from './client'
 import BulkSender from './bulk-sender'
 import { generate as generateMapping } from './mapping'
 import { Document } from 'mongoose'
 import { PluginOptions } from './plugin-options'
-import { ElasticsearchMethods } from './elasticsearch-methods'
+import { MongoosearchMethods } from './mongoosearch-methods'
 
 export function getIndexName(collectionName: string) {
   const lowercase = collectionName.toLowerCase()
@@ -22,37 +21,33 @@ export function getIndexName(collectionName: string) {
 }
 
 export const esOptions = options => {
-  let options$ = null
+  let _options = null
 
   return function esOptions(): PluginOptions & {
     bulker: BulkSender
     mapping: Record<string, any>
   } {
-    if (options$) return options$
+    if (_options) return _options
 
-    options$ = cloneDeep(options)
+    _options = cloneDeep(options)
 
     if (!options.index) {
-      options$.index = getIndexName(this.collection.name)
+      _options.index = getIndexName(this.collection.name)
     }
 
-    if (!options$.index) {
+    if (!_options.index) {
       throw new Error('Missing collection name to build Elasticsearch index')
     }
 
-    if (!options.client) {
-      options$.client = client(options)
-    }
-
     if (options.bulk) {
-      options$.bulker = new BulkSender(options.client, options.bulk)
+      _options.bulker = new BulkSender(options.client, options.bulk)
     }
 
-    options$.mapping = Object.freeze({
+    _options.mapping = Object.freeze({
       properties: generateMapping(this.schema),
     })
 
-    return options$
+    return _options
   }
 }
 
@@ -66,7 +61,7 @@ export type Updater =
   | false
 
 export async function esIndex(
-  this: ElasticsearchMethods & Document,
+  this: MongoosearchMethods & Document,
   update?: Updater,
 ) {
   const esOptions = this.esOptions()

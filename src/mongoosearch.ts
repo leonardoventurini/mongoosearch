@@ -1,4 +1,4 @@
-import { clone } from 'lodash'
+import { cloneDeep } from 'lodash'
 import { esIndex, esOptions } from './methods'
 import { esCreateMapping } from './statics/es-create-mapping'
 import { esExists } from './statics/es-exists'
@@ -13,26 +13,26 @@ import { postRemove } from './hooks/post-remove'
 import { postSave } from './hooks/post-save'
 import { preSave } from './hooks/pre-save'
 
-export function ElasticsearchPlugin(schema, options) {
+export function Mongoosearch(schema, options) {
   if (!options.client) return
 
-  options = clone(options)
+  options = cloneDeep(options)
 
   schema.__ELASTIC = true
 
-  schema.statics.esOptions = esOptions(options)
+  schema.statics.esCount = esCount
   schema.statics.esCreateMapping = esCreateMapping
+  schema.statics.esDeleteIndex = esDeleteIndex
+  schema.statics.esExists = esExists
+  schema.statics.esOptions = esOptions(options)
   schema.statics.esRefresh = esRefresh
   schema.statics.esSearch = esSearch
   schema.statics.esSync = esSync
-  schema.statics.esCount = esCount
-  schema.statics.esExists = esExists
-  schema.statics.esDeleteIndex = esDeleteIndex
 
-  schema.methods.esOptions = esOptions(options)
   schema.methods.esIndex = esIndex
-  schema.methods.esUnset = esUnset
+  schema.methods.esOptions = esOptions(options)
   schema.methods.esRemove = esRemove
+  schema.methods.esUnset = esUnset
 
   if (!options.esManualIndexing) {
     schema.pre('save', preSave)

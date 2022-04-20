@@ -1,8 +1,8 @@
 import { isEmpty, isString } from 'lodash'
-import { ElasticsearchMethods } from '../elasticsearch-methods'
+import { MongoosearchMethods } from '../mongoosearch-methods'
 
 export async function esCount(
-  this: ElasticsearchMethods,
+  this: MongoosearchMethods,
   query: Record<string, any> | string = null,
   options: { countOnly?: boolean } = {},
 ) {

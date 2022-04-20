@@ -1,8 +1,8 @@
-import { ElasticsearchMethods } from './elasticsearch-methods'
+import { MongoosearchMethods } from './mongoosearch-methods'
 import { Document } from 'mongoose'
 
 export async function esUnset(
-  this: ElasticsearchMethods & Document,
+  this: MongoosearchMethods & Document,
   fields: string[] | string,
 ) {
   const esOptions = this.esOptions()

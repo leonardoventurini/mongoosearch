@@ -4,11 +4,11 @@ import { ESType } from '../src/mapping'
 import { lowerCase, omit } from 'lodash'
 import { TestDatabase } from './utils/test-database'
 import { ElasticsearchClient } from './utils/elasticsearch-client'
-import { SnakeCollection } from './utils/snake-collection'
+import { SnakeCollection } from './utils/collections/snake-collection'
 import faker from 'faker'
 import { getIndexName } from './utils/get-index-name'
 import { CollectionNames } from './utils/collection-names'
-import { CatCollection } from './utils/cat-collection'
+import { CatCollection } from './utils/collections/cat-collection'
 
 const firstSnake = faker.animal.snake()
 

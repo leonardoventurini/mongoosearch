@@ -1,18 +1,18 @@
 import mongoose, { Schema } from 'mongoose'
-import { ElasticsearchPlugin } from '../../src/elasticsearch-plugin'
-import { ElasticsearchClient } from './elasticsearch-client'
-import { ElasticsearchModel } from '../../src/elasticsearch-model'
-import { CollectionNames } from './collection-names'
+import { Mongoosearch } from '../../../src/mongoosearch'
+import { ElasticsearchClient } from '../elasticsearch-client'
+import { MongoosearchModel } from '../../../src/mongoosearch-model'
+import { CollectionNames } from '../collection-names'
 
 export interface Snake extends Document {
   sample: string
 }
 
-export interface SnakeModel extends ElasticsearchModel<Snake> {}
+export interface SnakeModel extends MongoosearchModel<Snake> {}
 
 export const SnakeSchema = new Schema<Snake, SnakeModel>({
   sample: { type: String, elasticsearch: true },
-}).plugin(ElasticsearchPlugin, {
+}).plugin(Mongoosearch, {
   client: ElasticsearchClient,
   esManualIndexing: true,
 })

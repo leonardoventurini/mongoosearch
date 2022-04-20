@@ -19,7 +19,7 @@ import { esSync } from './statics/es-sync'
 import { esCount } from './statics/es-count'
 import { esDeleteIndex } from './statics/es-delete-index'
 
-export interface ElasticsearchModel<
+export interface MongoosearchModel<
   TSchema = any,
   TQueryHelpers = any,
   TMethods = any,

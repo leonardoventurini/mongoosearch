@@ -3,12 +3,14 @@ export async function esDeleteIndex() {
 
   const exists = await this.esExists()
 
-  return exists
-    ? await client.indices.delete(
-        {
-          index,
-        },
-        { requestTimeout: 60 },
-      )
-    : false
+  if (exists) {
+    return await client.indices.delete(
+      {
+        index,
+      },
+      { requestTimeout: 60 },
+    )
+  }
+
+  return false
 }
