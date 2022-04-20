@@ -34,7 +34,7 @@ export function Mongoosearch(schema, options) {
   schema.methods.esRemove = esRemove
   schema.methods.esUnset = esUnset
 
-  if (!options.esManualIndexing) {
+  if (!options.manual) {
     schema.pre('save', preSave)
     schema.post('save', postSave)
     schema.post('findOneAndUpdate', postSave)

@@ -6,11 +6,11 @@ export type CreateMappingOptions = {
   delete?: boolean
 }
 
-export async function esCreateMapping(opts?: CreateMappingOptions) {
+export async function esCreateMapping(options?: CreateMappingOptions) {
   const { index, mappingSettings, mapping, client } = this.esOptions()
 
   if (await this.esExists()) {
-    if (opts?.delete) {
+    if (options?.delete) {
       esLog(`deleting map for ${chalk.cyan(index)}`)
       await this.esDeleteIndex()
     } else {

@@ -86,6 +86,10 @@ export function getExtraOptions(options) {
   return omit(options.elasticsearch, 'indexed', 'type', 'value')
 }
 
+export const isTest = process.env.NODE_ENV === 'test'
+
 export function esLog(...args) {
-  console.log(chalk.yellow(...args))
+  if (isTest) {
+    console.log(chalk.yellow(...args))
+  }
 }

@@ -69,7 +69,7 @@ export type PluginOptions = {
    * Whether or not to demand indexing on CRUD operations. If set to true
    * middleware hooks for save, update, delete do not fire. Defaults to false.
    */
-  esManualIndexing?: boolean
+  manual?: boolean
 
   /**
    * Options to use when synchronising.

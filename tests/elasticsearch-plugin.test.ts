@@ -100,7 +100,7 @@ describe('Elasticsearch Plugin', async () => {
     expect(options.client).to.be.instanceOf(Client)
 
     expect(omit(options, 'client')).to.containSubset({
-      esManualIndexing: true,
+      manual: true,
       index: getIndexName(CollectionNames.Snake),
       mapping: {
         properties: {

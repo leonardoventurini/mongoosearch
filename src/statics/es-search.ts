@@ -61,13 +61,13 @@ export async function esSearch(query: any = {}, options: ESSearchOptions = {}) {
     return docsOnly ? [] : result
   }
 
-  let query$ = this.find({ _id: { $in: ids } }, select, opts)
+  let _query = this.find({ _id: { $in: ids } }, select, opts)
 
   if (hydrate.populate) {
-    query$ = query$.populate(hydrate.populate)
+    _query = _query.populate(hydrate.populate)
   }
 
-  const docs = await query$
+  const docs = await _query
 
   const docsById = new Map()
 

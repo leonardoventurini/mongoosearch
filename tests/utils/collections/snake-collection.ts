@@ -14,7 +14,7 @@ export const SnakeSchema = new Schema<Snake, SnakeModel>({
   sample: { type: String, elasticsearch: true },
 }).plugin(Mongoosearch, {
   client: ElasticsearchClient,
-  esManualIndexing: true,
+  manual: true,
 })
 
 export const SnakeCollection = mongoose.model<Snake, SnakeModel>(
