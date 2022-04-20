@@ -1,7 +1,6 @@
 import { expect } from 'chai'
 import { Client } from '@elastic/elasticsearch'
 import { lowerCase, omit } from 'lodash'
-import { TestDatabase } from './utils/test-database'
 import { ElasticsearchClient } from './utils/elasticsearch-client'
 import { SnakeCollection } from './utils/collections/snake-collection'
 import faker from 'faker'
@@ -9,20 +8,9 @@ import { getIndexName } from './utils/get-index-name'
 import { CollectionNames } from './utils/collection-names'
 import { CatCollection } from './utils/collections/cat-collection'
 import { ESType } from '../src'
+import { clearIndexes } from './utils/clear-indexes'
 
 const firstSnake = faker.animal.snake()
-
-async function clearIndexes() {
-  const getIndexes = await ElasticsearchClient.indices.get({ index: 'test_*' })
-
-  for (const index of Object.keys(getIndexes)) {
-    console.log(`Deleting index ${index}`)
-
-    await ElasticsearchClient.indices.delete({
-      index,
-    })
-  }
-}
 
 describe('Elasticsearch Plugin', async () => {
   beforeEach(async () => {
@@ -132,42 +120,5 @@ describe('Elasticsearch Plugin', async () => {
     })
 
     expect(data.hits.hits).to.have.length(1)
-  })
-
-  describe('Synchronization', () => {
-    afterEach(async () => {
-      await TestDatabase.clearDatabase()
-    })
-
-    it('should synchronize', async () => {
-      const result = await SnakeCollection.esSync()
-
-      // @ts-ignore
-      expect(result?._shards?.successful).to.be.greaterThan(0)
-    })
-
-    it('should search', async () => {
-      await clearIndexes()
-
-      await SnakeCollection.create({ sample: 'Sample 2' })
-
-      await SnakeCollection.esSync({ sample: /sample/i })
-
-      const result = await SnakeCollection.esSearch({
-        query: {
-          match_all: {},
-        },
-      })
-
-      const { hits } = result?.hits ?? {}
-
-      expect(hits).to.have.length.greaterThan(0)
-
-      expect(
-        hits
-          .map(({ _source }) => /sample/i.test(_source.sample))
-          .every(Boolean),
-      ).to.be.true
-    })
   })
 })
