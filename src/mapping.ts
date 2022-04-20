@@ -5,29 +5,6 @@ import { ESType } from './es-type'
 export type ESMapping = Record<string, { type: ESType; properties?: ESMapping }>
 export type ESTypeOption = ESType | Record<string, { type: ESTypeOption }>
 
-declare module 'mongoose' {
-  export interface SchemaTypeOptions<T> {
-    elasticsearch?: {
-      indexed?: boolean
-      type?: ESTypeOption
-      value?(doc: Document): any
-    } & Record<string, any>
-  }
-
-  export interface SchemaOptions {
-    elasticsearch?: {
-      typeKey?: string
-      extend?: Record<
-        string,
-        {
-          type?: ESType
-          value?(doc: Document): any
-        }
-      >
-    } & Record<string, any>
-  }
-}
-
 export function generate(schema: any) {
   const mapping = {} as any
   const typeKey = getTypeKey(schema)
