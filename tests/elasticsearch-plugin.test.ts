@@ -1,6 +1,5 @@
 import { expect } from 'chai'
 import { Client } from '@elastic/elasticsearch'
-import { ESType } from '../src/mapping'
 import { lowerCase, omit } from 'lodash'
 import { TestDatabase } from './utils/test-database'
 import { ElasticsearchClient } from './utils/elasticsearch-client'
@@ -9,6 +8,7 @@ import faker from 'faker'
 import { getIndexName } from './utils/get-index-name'
 import { CollectionNames } from './utils/collection-names'
 import { CatCollection } from './utils/collections/cat-collection'
+import { ESType } from '../src'
 
 const firstSnake = faker.animal.snake()
 

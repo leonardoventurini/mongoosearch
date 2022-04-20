@@ -1,4 +1,4 @@
-import { MongoosearchMethods } from './mongoosearch-methods'
+import { MongoosearchMethods } from '../mongoosearch-methods'
 import { Document } from 'mongoose'
 
 export async function esUnset(

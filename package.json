@@ -1,6 +1,6 @@
 {
   "name": "mongoosearch",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
@@ -9,7 +9,6 @@
     "test": "nodemon --watch 'tests/**/*' --watch 'src/**/*' -e ts --exec 'yarn test:mocha'",
     "test:mocha": "NODE_ENV=test mocha -r ts-node/register/transpile-only 'tests/**/*.test.ts' --extension ts --file 'tests/utils/setup-tests.ts' --timeout 60000 --exit"
   },
-  "private": true,
   "dependencies": {
     "@elastic/elasticsearch": "^8.1.0",
     "axios": "^0.21.4",
@@ -36,5 +35,16 @@
     "sinon-chai": "^3.7.0",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
-  }
+  },
+  "license": "MIT",
+  "repository": "https://github.com/leonardoventurini/mongoosearch",
+  "bugs": {
+    "url": "https://github.com/leonardoventurini/mongoosearch/issues"
+  },
+  "keywords": [
+    "mongoose",
+    "elasticsearch",
+    "search",
+    "mongodb"
+  ]
 }

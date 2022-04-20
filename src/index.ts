@@ -1,1 +1,6 @@
+export * from './es-type'
 export * from './mongoosearch'
+export * from './mongoosearch-methods'
+export * from './mongoosearch-model'
+export * from './plugin-options'
+export * from './utils'

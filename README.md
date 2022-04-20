@@ -1,4 +1,4 @@
-# Mongoosearch
+# Mongoosearch <sup>Beta</sup>
 
 Integrate Mongoose with Elasticsearch, the easy way.
 

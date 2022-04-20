@@ -1,6 +1,6 @@
 import { esIndex, Updater } from './methods'
 import { PluginOptions } from './plugin-options'
-import { esUnset } from './es-unset'
+import { esUnset } from './statics/es-unset'
 import { esRemove } from './statics/es-remove'
 
 export interface MongoosearchMethods {
