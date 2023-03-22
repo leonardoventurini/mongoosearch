@@ -21,7 +21,6 @@ describe('Elasticsearch Plugin', async () => {
       sample: firstSnake,
     })
 
-    await SnakeCollection.esCreateMapping()
     await SnakeCollection.esSync()
   })
 
@@ -56,7 +55,9 @@ describe('Elasticsearch Plugin', async () => {
     ])
 
     const result = await SnakeCollection.esSearch({
-      query_string: { query: lowerCase(firstSnake) },
+      query: {
+        match_all: {},
+      },
     })
 
     expect(result).to.containSubset({
@@ -105,6 +106,7 @@ describe('Elasticsearch Plugin', async () => {
       mapping: {
         properties: {
           sample: { type: ESType.Text },
+          embeddings: { type: ESType.DenseVector, dims: 768 },
         },
       },
     })

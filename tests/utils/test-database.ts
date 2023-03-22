@@ -8,12 +8,7 @@ export namespace TestDatabase {
     mongod = await MongoMemoryServer.create()
     const uri = mongod.getUri()
 
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-    })
+    await mongoose.connect(uri)
   }
 
   export const clearDatabase = async () => {
@@ -43,6 +38,7 @@ export namespace TestDatabase {
        * We need to clear the schemas and models otherwise Mocha will try to
        * overwrite them since the same instance is utilized.
        */
+      // @ts-ignore
       mongoose.connection.models = {}
 
       // @ts-ignore

@@ -1,17 +1,26 @@
 import mongoose, { Schema } from 'mongoose'
-import { Mongoosearch } from '../../../src/mongoosearch'
+import { ESType, Mongoosearch, MongoosearchModel } from '../../../src'
 import { ElasticsearchClient } from '../elasticsearch-client'
-import { MongoosearchModel } from '../../../src/mongoosearch-model'
 import { CollectionNames } from '../collection-names'
 
 export interface Snake extends Document {
   sample: string
+
+  embeddings: number[]
 }
 
 export interface SnakeModel extends MongoosearchModel<Snake> {}
 
 export const SnakeSchema = new Schema<Snake, SnakeModel>({
   sample: { type: String, elasticsearch: true },
+  embeddings: {
+    type: [Number],
+    default: Array(768).fill(0),
+    elasticsearch: {
+      type: ESType.DenseVector,
+      dims: 768,
+    },
+  },
 }).plugin(Mongoosearch, {
   client: ElasticsearchClient,
   manual: true,

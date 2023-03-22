@@ -3,11 +3,13 @@ import { ESTypeOption } from './mapping'
 
 declare module 'mongoose' {
   export interface SchemaTypeOptions<T> {
-    elasticsearch?: {
-      indexed?: boolean
-      type?: ESTypeOption
-      value?(doc: Document): any
-    } & Record<string, any>
+    elasticsearch?:
+      | ({
+          indexed?: boolean
+          type?: ESTypeOption
+          value?(doc: Document): any
+        } & Record<string, any>)
+      | boolean
   }
 
   export interface SchemaOptions {

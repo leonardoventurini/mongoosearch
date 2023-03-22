@@ -44,7 +44,15 @@ export default class BulkSender extends EventEmitter {
 
       this.client
         .bulk({ operations: this.buffer })
-        .then(() => {
+        .then(res => {
+          if (Array.isArray(res.items)) {
+            res.items.forEach(item => {
+              if (item.index.error) {
+                console.error('elasticsearch sync error:', item.index)
+              }
+            })
+          }
+
           this.emit('sent', len)
         })
         .catch(err => {

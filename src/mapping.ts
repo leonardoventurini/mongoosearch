@@ -24,8 +24,8 @@ export function generate(schema: any) {
     }
 
     const path = schema.paths[name]
-    const type = getType(path)
     const options = getOptions(path, typeKey)
+    const type = getType(path)
 
     if (
       explicit &&
@@ -60,12 +60,16 @@ export function generate(schema: any) {
       current = mapping[name] = { type, ...getExtraOptions(options) }
     }
 
+    if (Object.values(ESType).includes(options.elasticsearch?.type)) {
+      current.type = options.elasticsearch.type
+    }
+
     if (options.elasticsearch?.type && isObject(options.elasticsearch.type)) {
       current.type = 'object'
       current.properties = generateESTypeMapping(options.elasticsearch.type)
     } else {
       if (
-        !get(options, 'elasticsearch.value') ||
+        !get(options, 'elasticsearch.value') &&
         !options.elasticsearch?.type
       ) {
         if (isEmbedded(type)) {

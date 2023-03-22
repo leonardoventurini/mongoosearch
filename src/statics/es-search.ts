@@ -1,6 +1,6 @@
 import * as utils from '../utils'
-import mongoose from 'mongoose'
 import { isString } from 'lodash'
+import { ObjectId } from 'bson'
 
 export type ESSearchOptions = {
   idsOnly?: boolean
@@ -44,7 +44,7 @@ export async function esSearch(query: any = {}, options: ESSearchOptions = {}) {
   const isObjectId = utils.getType(this.schema.paths._id) === 'objectid'
 
   const ids = result.hits.hits.map(hit =>
-    isObjectId ? mongoose.Types.ObjectId(hit._id) : hit._id,
+    isObjectId ? new ObjectId(hit._id) : hit._id,
   )
 
   if (idsOnly) {

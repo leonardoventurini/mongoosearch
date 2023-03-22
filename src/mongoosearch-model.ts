@@ -1,5 +1,5 @@
 import {
-  EnforceDocument,
+  HydratedDocument,
   FilterQuery,
   Model,
   QueryOptions,
@@ -54,8 +54,8 @@ export interface MongoosearchModel<
     filter?:
       | FilterQuery<TSchema>
       | QueryWithHelpers<
-          Array<EnforceDocument<TSchema, TMethods>>,
-          EnforceDocument<TSchema, TMethods>,
+          Array<HydratedDocument<TSchema, TMethods>>,
+          HydratedDocument<TSchema, TMethods>,
           TQueryHelpers,
           TSchema
         >,
